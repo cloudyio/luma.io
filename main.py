@@ -30,7 +30,21 @@ class Bot(commands.Bot):
         if ENVIRONMENT != 'production':
             intents.guilds = True
 
-        super().__init__(command_prefix="-", intents=intents)
+        super().__init__(command_prefix=self.get_prefix, intents=intents)
+
+    async def get_prefix(self, message):
+        default_prefix = os.getenv('DEFAULT_PREFIX', '!')
+
+        if message.guild is None:
+            return default_prefix
+
+        from utils import utilities
+        try:
+            prefix = await utilities.get_prefix(str(message.guild.id))
+            return [prefix, default_prefix]
+        except Exception as e:
+            logger.error(f"Error getting prefix: {e}")
+            return default_prefix
 
     async def on_ready(self):
         logger.warning(f'Logged in as {self.user} (ID: {self.user.id}) PROD ENVIRONMENT')
@@ -59,8 +73,6 @@ class Bot(commands.Bot):
                     logger.error(f'Failed to load cog {filename}: {e}')
 
         await self.load_extension('jishaku')
-
-
 
 
 async def main():

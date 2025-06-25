@@ -15,7 +15,6 @@ class Command(BaseModel):
         permissions: Optional[Dict[str, Any]] = None,
         default_permissions: Optional[Dict[str, Any]] = None,
         cooldown: Optional[Dict[str, Any]] = None,
-        developer_only: bool = False,
         _id: Optional[str] = None
     ):
         # create  _id from guild_id and name
@@ -39,7 +38,6 @@ class Command(BaseModel):
             "seconds": 0,
             "per_user": False
         }
-        self.developer_only = developer_only
 
     @classmethod
     async def find_by_name_and_guild(cls, name: str, guild_id: str) -> Optional['Command']:
