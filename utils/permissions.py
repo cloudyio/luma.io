@@ -8,7 +8,7 @@ from db.models.commands import Command
 class CommandErrorType(Enum):
     PERMISSION = "You don't have permission to use this command."
     SETUP = "This command is not set up in this server."
-    DISABLED = "This command is currently disabled."
+    DISABLED = "This command/module is currently disabled."
     DEVELOPER = "This command is only available to bot developers."
     ROLE_REQUIRED = "You need one of these roles to use this command: {}"
     ROLE_BLOCKED = "You cannot use this command with these roles: {}"
@@ -50,6 +50,9 @@ def check_perms(command_name: str):
             if not ctx.guild:
                 await send_error(ctx, CommandErrorType.SETUP)
                 return
+
+            if ctx.author.permissions.administrator:
+                return await func(*args, **kwargs)
 
             # Get command from database
             try:
